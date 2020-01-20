@@ -2,29 +2,49 @@
 {
     public class DefaultTaxCalculator
     {
-        public int CalculateTax(Vehicle vehicle)
+        public int CalculateTax(Vehicle vehicle, bool secondYearTaxFeatureEnabled = false, bool expensiveTaxFeatureEnabled = false)
         {
-            int tax = 0;
+            int tax;
+            if (vehicle.DateOfFirstRegistration.Year == 2019)
+            {
+                tax = GetFirstYearTax(vehicle);
+            }
+            else if (vehicle.ListPrice >= 40000)
+            {
+                tax = SecondTaxExpensivePayments(vehicle, expensiveTaxFeatureEnabled);
+            }
+            else
+            {
+                tax = SecondTaxPayments(vehicle, secondYearTaxFeatureEnabled);
+            }
+
+            return tax;
+        }
+
+        private static int GetFirstYearTax(Vehicle vehicle)
+        {
+            int firstYearTax = 0;
             switch (vehicle.FuelType)
             {
                 case FuelType.Petrol:
-                    tax = PetrolTax(vehicle);
+                    firstYearTax = FirstYearPetrolTax(vehicle);
                     break;
                 case FuelType.Diesel:
-                    tax = DieselTax(vehicle);
+                    firstYearTax = FirstYearDieselTax(vehicle);
                     break;
                 case FuelType.Electric:
                     break;
                 case FuelType.AlternativeFuel:
-                    tax = AlternativeFuelTax(vehicle);
+                    firstYearTax = FirstYearAlternativeFuelTax(vehicle);
                     break;
                 default:
                     break;
             }
-            return tax;
+
+            return firstYearTax;
         }
 
-        private static int PetrolTax(Vehicle vehicle)
+        private static int FirstYearPetrolTax(Vehicle vehicle)
         {
             int tax = 0;
             if (vehicle != null)
@@ -85,7 +105,7 @@
             return tax;
         }
 
-        private static int DieselTax(Vehicle vehicle)
+        private static int FirstYearDieselTax(Vehicle vehicle)
         {
             int tax = 0;
             if (vehicle != null)
@@ -147,7 +167,7 @@
             return tax;
         }
 
-        private static int AlternativeFuelTax(Vehicle vehicle)
+        private static int FirstYearAlternativeFuelTax(Vehicle vehicle)
         {
             int tax = 0;
             if (vehicle != null)
@@ -206,6 +226,53 @@
                 }
             }
 
+            return tax;
+        }
+
+        private static int SecondTaxPayments(Vehicle vehicle, bool secondTaxFeatureEnabled = false)
+        {
+            int tax = 0;
+            if (secondTaxFeatureEnabled)
+            {
+                switch (vehicle.FuelType)
+                {
+                    case FuelType.Petrol:
+                    case FuelType.Diesel:
+                        tax = 140;
+                        break;
+                    case FuelType.Electric:
+                        tax = 0;
+                        break;
+                    case FuelType.AlternativeFuel:
+                        tax = 130;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return tax;
+        }
+        private static int SecondTaxExpensivePayments(Vehicle vehicle, bool expensiveTaxFeatureEnabled = false)
+        {
+            int tax = 0;
+            if (expensiveTaxFeatureEnabled)
+            {
+                switch (vehicle.FuelType)
+                {
+                    case FuelType.Petrol:
+                    case FuelType.Diesel:
+                        tax = 450;
+                        break;
+                    case FuelType.Electric:
+                        tax = 310;
+                        break;
+                    case FuelType.AlternativeFuel:
+                        tax = 440;
+                        break;
+                    default:
+                        break;
+                }
+            }
             return tax;
         }
     }
